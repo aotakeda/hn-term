@@ -52,7 +52,7 @@ export const StoryList = ({
                     </text>
                     <text>
                       {styled.tertiary(`${formatScore(story.score)} by ${story.by} | ${formatTimeAgo(story.time)}`)}
-                      {story.descendants !== undefined && styled.tertiary(` | ${story.descendants} comments`)}
+                      {story.descendants !== undefined ? styled.tertiary(` | ${story.descendants} comments`) : null}
                     </text>
                     {story.url && (
                       <text>{styled.link(story.url)}</text>
