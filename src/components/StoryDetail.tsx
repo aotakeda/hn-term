@@ -45,7 +45,8 @@ export const StoryDetail = ({ story, onBack }: StoryDetailProps) => {
     loadedParentCount,
     expandComment,
     collapseComment,
-    loadMoreComments
+    loadMoreComments,
+    getValidChildrenCount
   } = useComments({
     parentCommentIds
   });
@@ -63,45 +64,84 @@ export const StoryDetail = ({ story, onBack }: StoryDetailProps) => {
     commentsAreaHeight
   });
 
+  const handleOpenLinks = () => {
+    const selectedComment = visibleComments[selectedIndex];
+    if (!selectedComment?.text) return;
+
+    const links = extractLinks(selectedComment.text);
+    if (links.length > 0) {
+      openLinksInBrowser(links);
+    }
+  };
+
+  const handleCollapseComment = () => {
+    const selectedComment = visibleComments[selectedIndex];
+    if (!selectedComment) return;
+
+    if (expandedComments.has(selectedComment.id)) {
+      collapseComment(selectedComment.id);
+    }
+  };
+
+  const handleExpandComment = () => {
+    const selectedComment = visibleComments[selectedIndex];
+    const validChildrenCount = getValidChildrenCount(selectedComment.id);
+
+    if (!selectedComment || validChildrenCount === 0) return;
+
+    const isExpanded = expandedComments.has(selectedComment.id);
+    const hasVisibleChildren = navigationOrder.some(item =>
+      item.comment.parent === selectedComment.id && item.isVisible
+    );
+
+    if (!isExpanded || !hasVisibleChildren) {
+      expandComment(selectedComment.id);
+    }
+  };
+
+  const handleNavigateDown = () => {
+    navigateDown(() => {
+      const shouldLoadMore = loadedParentCount < parentCommentIds.length && !loadingMore;
+      if (shouldLoadMore) {
+        loadMoreComments();
+      }
+    });
+  };
+
   useKeyboard((key) => {
     const keyStr = getKeyString(key);
 
-    if (handleModalKey(key, (modalKey) => {
+    const isModalHandled = handleModalKey(key, (modalKey) => {
       if (modalKey === 'o') {
-        const selectedComment = visibleComments[selectedIndex];
-        if (selectedComment && selectedComment.text) {
-          const links = extractLinks(selectedComment.text);
-          if (links.length > 0) {
-            openLinksInBrowser(links);
-          }
-        }
+        handleOpenLinks();
       }
-    })) {
-      return;
-    }
+    });
+
+    if (isModalHandled) return;
 
     if (isKeyMatch(keyStr, config.keyBindings.comments.back)) {
       onBack();
-    } else if (isKeyMatch(keyStr, config.keyBindings.comments.collapse)) {
-      const selectedComment = visibleComments[selectedIndex];
-      if (selectedComment && expandedComments.has(selectedComment.id)) {
-        collapseComment(selectedComment.id);
-      }
-    } else if (isKeyMatch(keyStr, config.keyBindings.comments.expand)) {
-      const selectedComment = visibleComments[selectedIndex];
-      if (selectedComment && selectedComment.kids && selectedComment.kids.length > 0) {
-        if (!expandedComments.has(selectedComment.id)) {
-          expandComment(selectedComment.id);
-        }
-      }
-    } else if (isKeyMatch(keyStr, config.keyBindings.navigation.up)) {
+      return;
+    }
+
+    if (isKeyMatch(keyStr, config.keyBindings.comments.collapse)) {
+      handleCollapseComment();
+      return;
+    }
+
+    if (isKeyMatch(keyStr, config.keyBindings.comments.expand)) {
+      handleExpandComment();
+      return;
+    }
+
+    if (isKeyMatch(keyStr, config.keyBindings.navigation.up)) {
       navigateUp();
-    } else if (isKeyMatch(keyStr, config.keyBindings.navigation.down)) {
-      navigateDown(() => {
-        if (loadedParentCount < parentCommentIds.length && !loadingMore) {
-          loadMoreComments();
-        }
-      });
+      return;
+    }
+
+    if (isKeyMatch(keyStr, config.keyBindings.navigation.down)) {
+      handleNavigateDown();
+      return;
     }
   });
 
@@ -120,6 +160,7 @@ export const StoryDetail = ({ story, onBack }: StoryDetailProps) => {
             loading={loading}
             loadingMore={loadingMore}
             error={error}
+            getValidChildrenCount={getValidChildrenCount}
           />
         </scrollbox>
       </box>

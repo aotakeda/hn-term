@@ -25,11 +25,18 @@ export function useViewNavigation() {
 
     if (isKeyMatch(keyStr, config.keyBindings.navigation.up)) {
       setSelectedTabIndex(prev => prev > 0 ? prev - 1 : TAB_OPTIONS.length - 1);
-    } else if (isKeyMatch(keyStr, config.keyBindings.navigation.down)) {
+      return;
+    }
+
+    if (isKeyMatch(keyStr, config.keyBindings.navigation.down)) {
       setSelectedTabIndex(prev => prev < TAB_OPTIONS.length - 1 ? prev + 1 : 0);
-    } else if (isKeyMatch(keyStr, config.keyBindings.tabs.select)) {
+      return;
+    }
+
+    if (isKeyMatch(keyStr, config.keyBindings.tabs.select)) {
       setViewMode('stories');
       setSelectedStoryIndex(0);
+      return;
     }
   };
 
@@ -37,21 +44,19 @@ export function useViewNavigation() {
     setSelectedTabIndex(index);
   };
 
-  const handleStoryNavigation = (key: any, stories: HNStory[], config: Config, loadMoreCallback?: () => void) => {
-    const keyStr = getKeyString(key);
+  const handleNavigateUp = () => {
+    if (selectedStoryIndex <= 0) return;
 
-    if (handleModalKey(key)) {
-      return;
+    const newIndex = selectedStoryIndex - 1;
+    setSelectedStoryIndex(newIndex);
+
+    if (newIndex < storyScrollOffset) {
+      setStoryScrollOffset(Math.max(0, newIndex));
     }
+  };
 
-    if (isKeyMatch(keyStr, config.keyBindings.navigation.up) && selectedStoryIndex > 0) {
-      const newIndex = selectedStoryIndex - 1;
-      setSelectedStoryIndex(newIndex);
-
-      if (newIndex < storyScrollOffset) {
-        setStoryScrollOffset(Math.max(0, newIndex));
-      }
-    } else if (isKeyMatch(keyStr, config.keyBindings.navigation.down) && selectedStoryIndex < stories.length - 1) {
+  const handleNavigateDown = (stories: HNStory[], loadMoreCallback?: () => void) => {
+    if (selectedStoryIndex < stories.length - 1) {
       const newIndex = selectedStoryIndex + 1;
       setSelectedStoryIndex(newIndex);
 
@@ -63,15 +68,52 @@ export function useViewNavigation() {
       if (newIndex >= stories.length - 10 && loadMoreCallback) {
         loadMoreCallback();
       }
-    } else if (isKeyMatch(keyStr, config.keyBindings.navigation.down) && selectedStoryIndex === stories.length - 1 && loadMoreCallback) {
+      return;
+    }
+
+    if (selectedStoryIndex === stories.length - 1 && loadMoreCallback) {
       loadMoreCallback();
-    } else if (isKeyMatch(keyStr, config.keyBindings.stories.select) && stories.length > 0) {
-      setSelectedStory(stories[selectedStoryIndex]);
-      setViewMode('story-detail');
-    } else if (isKeyMatch(keyStr, config.keyBindings.stories.back)) {
-      setViewMode('tabs');
-      setStoryScrollOffset(0);
-      setSelectedStoryIndex(0);
+    }
+  };
+
+  const handleSelectStory = (stories: HNStory[]) => {
+    if (stories.length === 0) return;
+
+    setSelectedStory(stories[selectedStoryIndex]);
+    setViewMode('story-detail');
+  };
+
+  const handleBackToTabs = () => {
+    setViewMode('tabs');
+    setStoryScrollOffset(0);
+    setSelectedStoryIndex(0);
+  };
+
+  const handleStoryNavigation = (key: any, stories: HNStory[], config: Config, loadMoreCallback?: () => void) => {
+    const keyStr = getKeyString(key);
+
+    if (handleModalKey(key)) {
+      return;
+    }
+
+    if (isKeyMatch(keyStr, config.keyBindings.navigation.up)) {
+      handleNavigateUp();
+      return;
+    }
+
+    if (isKeyMatch(keyStr, config.keyBindings.navigation.down)) {
+      handleNavigateDown(stories, loadMoreCallback);
+      return;
+    }
+
+    if (isKeyMatch(keyStr, config.keyBindings.stories.select)) {
+      handleSelectStory(stories);
+      return;
+    }
+
+    if (isKeyMatch(keyStr, config.keyBindings.stories.back)) {
+      handleBackToTabs();
+      return;
     }
   };
 

@@ -11,6 +11,7 @@ interface CommentsListProps {
   loading: boolean;
   loadingMore: boolean;
   error: string | null;
+  getValidChildrenCount: (commentId: number) => number;
 }
 
 export const CommentsList = ({
@@ -21,7 +22,8 @@ export const CommentsList = ({
   loadingComments,
   loading,
   loadingMore,
-  error
+  error,
+  getValidChildrenCount
 }: CommentsListProps) => {
   if (loading) {
     return <text>{styled.secondary('Loading comments...')}</text>;
@@ -45,6 +47,7 @@ export const CommentsList = ({
           availableWidth={availableWidth}
           expandedComments={expandedComments}
           loadingComments={loadingComments}
+          getValidChildrenCount={getValidChildrenCount}
         />
       ))}
       {loadingMore && (

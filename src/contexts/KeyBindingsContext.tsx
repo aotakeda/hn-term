@@ -105,32 +105,39 @@ export function KeyBindingsProvider({ children }: KeyBindingsProviderProps) {
     return false;
   };
 
+  const activateModalMode = () => {
+    setIsModalMode(true);
+
+    if (modalTimeout) {
+      clearTimeout(modalTimeout);
+    }
+
+    const timeout = setTimeout(() => {
+      setIsModalMode(false);
+    }, config.settings.modalTimeout);
+
+    setModalTimeout(timeout);
+  };
+
+  const exitModalMode = () => {
+    setIsModalMode(false);
+    if (modalTimeout) {
+      clearTimeout(modalTimeout);
+      setModalTimeout(null);
+    }
+  };
+
   const handleModalKey = (key: any, callback?: (key: string) => void): boolean => {
     const keyStr = getKeyString(key);
 
     if (isKeyMatch(keyStr, config.keyBindings.actions.modal)) {
-      setIsModalMode(true);
-
-      if (modalTimeout) {
-        clearTimeout(modalTimeout);
-      }
-
-      // Set timeout to exit modal mode
-      const timeout = setTimeout(() => {
-        setIsModalMode(false);
-      }, config.settings.modalTimeout);
-
-      setModalTimeout(timeout);
+      activateModalMode();
       return true;
     }
 
     if (isModalMode) {
       callback?.(keyStr);
-      setIsModalMode(false);
-      if (modalTimeout) {
-        clearTimeout(modalTimeout);
-        setModalTimeout(null);
-      }
+      exitModalMode();
       return true;
     }
 

@@ -30,8 +30,12 @@ const AppContent = () => {
   useKeyboard((key) => {
     if (viewMode === 'tabs') {
       handleTabNavigation(key, config);
-    } else if (viewMode === 'stories') {
+      return;
+    }
+
+    if (viewMode === 'stories') {
       handleStoryNavigation(key, stories, config, hasMore ? loadMore : undefined);
+      return;
     }
   });
 

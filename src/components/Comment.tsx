@@ -9,6 +9,7 @@ interface CommentProps {
   availableWidth: number;
   expandedComments: Set<number>;
   loadingComments: Set<number>;
+  getValidChildrenCount: (commentId: number) => number;
 }
 
 export const Comment = ({
@@ -16,12 +17,37 @@ export const Comment = ({
   isSelected,
   availableWidth,
   expandedComments,
-  loadingComments
+  loadingComments,
+  getValidChildrenCount
 }: CommentProps) => {
   if (comment.deleted || comment.dead) return null;
 
   const indent = (comment.depth || 0) * 3;
   const effectiveWidth = availableWidth - indent - 2;
+  const validChildrenCount = getValidChildrenCount(comment.id);
+  const hasKids = comment.kids && comment.kids.length > 0;
+  const hasValidChildren = validChildrenCount > 0;
+  const hasDeletedReplies = hasKids && !hasValidChildren;
+
+  const getReplyStatus = () => {
+    if (loadingComments.has(comment.id)) {
+      return ` • Loading comments...`;
+    }
+
+    if (hasDeletedReplies) {
+      const deletedCount = comment.kids!.length;
+      return ` • ${deletedCount === 1 ? 'Reply deleted' : `${deletedCount} replies deleted`}`;
+    }
+
+    if (hasValidChildren) {
+      const isExpanded = expandedComments.has(comment.id);
+      const action = isExpanded ? 'collapse' : 'expand';
+      const noun = validChildrenCount === 1 ? 'reply' : 'replies';
+      return ` • [Enter: ${action} ${validChildrenCount} ${noun}]`;
+    }
+
+    return '';
+  };
 
   return (
     <box
@@ -34,15 +60,7 @@ export const Comment = ({
         <text>
           {styled.tertiary(
             wrapText(
-              `${comment.by} • ${formatTimeAgo(comment.time)}${
-                comment.kids && comment.kids.length > 0
-                  ? (loadingComments.has(comment.id)
-                      ? ` • Loading comments...`
-                      : (expandedComments.has(comment.id)
-                          ? ` • [Enter: collapse ${comment.kids.length} replies]`
-                          : ` • [Enter: expand ${comment.kids.length} replies]`))
-                  : ''
-              }`,
+              `${comment.by} • ${formatTimeAgo(comment.time)}${getReplyStatus()}`,
               effectiveWidth
             )
           )}

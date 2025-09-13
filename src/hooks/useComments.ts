@@ -23,6 +23,7 @@ interface UseCommentsReturn {
   setNavigationOrder: React.Dispatch<React.SetStateAction<NavigationItem[]>>;
   setExpandedComments: React.Dispatch<React.SetStateAction<Set<number>>>;
   setLoadingComments: React.Dispatch<React.SetStateAction<Set<number>>>;
+  getValidChildrenCount: (commentId: number) => number;
 }
 
 const PARENTS_PER_BATCH = 10;
@@ -36,6 +37,18 @@ export const useComments = ({ parentCommentIds }: UseCommentsProps): UseComments
   const [loadedParentCount, setLoadedParentCount] = useState(0);
   const [expandedComments, setExpandedComments] = useState<Set<number>>(new Set());
   const [loadingComments, setLoadingComments] = useState<Set<number>>(new Set());
+  const [validChildrenCounts, setValidChildrenCounts] = useState<Map<number, number>>(new Map());
+
+  const getValidChildrenCount = (commentId: number): number => {
+    const comment = allComments.get(commentId);
+    if (!comment || !comment.kids) return 0;
+
+    if (validChildrenCounts.has(commentId)) {
+      return validChildrenCounts.get(commentId)!;
+    }
+
+    return comment.kids.length;
+  };
 
   const fetchComment = async (commentId: number, depth: number = 0): Promise<HNComment | null> => {
     try {
@@ -127,9 +140,11 @@ export const useComments = ({ parentCommentIds }: UseCommentsProps): UseComments
           newOrder.splice(parentIndex + 1, 0, ...childItems);
           return newOrder;
         });
+
+        setExpandedComments(prev => new Set([...prev, commentId]));
       }
 
-      setExpandedComments(prev => new Set([...prev, commentId]));
+      setValidChildrenCounts(prev => new Map(prev.set(commentId, childComments.length)));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to expand comment');
     } finally {
@@ -250,6 +265,7 @@ export const useComments = ({ parentCommentIds }: UseCommentsProps): UseComments
     setAllComments,
     setNavigationOrder,
     setExpandedComments,
-    setLoadingComments
+    setLoadingComments,
+    getValidChildrenCount
   };
 };
