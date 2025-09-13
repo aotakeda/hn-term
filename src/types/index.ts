@@ -48,6 +48,7 @@ export interface KeyBindings {
   stories: {
     navigate: string[];
     select: string[];
+    openLinks: string[];
     back: string[];
   };
   comments: {

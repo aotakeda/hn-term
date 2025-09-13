@@ -1,4 +1,5 @@
 import { useKeyboard, useTerminalDimensions } from '@opentui/react';
+import { useState } from 'react';
 import { HNStory } from '../types';
 import { extractLinks, openLinksInBrowser } from '../utils';
 import { styled, theme } from '../theme';
@@ -16,6 +17,7 @@ interface StoryDetailProps {
 export const StoryDetail = ({ story, onBack }: StoryDetailProps) => {
   const { width, height } = useTerminalDimensions();
   const { config, isModalMode, getKeyString, isKeyMatch, handleModalKey, getHelpText } = useKeyBindings();
+  const [isStorySelected, setIsStorySelected] = useState(true);
 
   const commentsAreaHeight = height - 2;
   const availableWidth = Math.max(40, width - 8);
@@ -55,6 +57,7 @@ export const StoryDetail = ({ story, onBack }: StoryDetailProps) => {
 
   const {
     selectedIndex,
+    setSelectedIndex,
     scrollboxRef,
     navigateUp,
     navigateDown
@@ -64,7 +67,21 @@ export const StoryDetail = ({ story, onBack }: StoryDetailProps) => {
     commentsAreaHeight
   });
 
-  const handleOpenLinks = () => {
+  const openStoryLinks = () => {
+    if (story.url) {
+      openLinksInBrowser([story.url]);
+      return;
+    }
+
+    if (story.text) {
+      const links = extractLinks(story.text);
+      if (links.length > 0) {
+        openLinksInBrowser(links);
+      }
+    }
+  };
+
+  const openCommentLinks = () => {
     const selectedComment = visibleComments[selectedIndex];
     if (!selectedComment?.text) return;
 
@@ -74,7 +91,17 @@ export const StoryDetail = ({ story, onBack }: StoryDetailProps) => {
     }
   };
 
+  const handleOpenLinks = () => {
+    if (isStorySelected) {
+      openStoryLinks();
+    } else {
+      openCommentLinks();
+    }
+  };
+
   const handleCollapseComment = () => {
+    if (isStorySelected) return;
+
     const selectedComment = visibleComments[selectedIndex];
     if (!selectedComment) return;
 
@@ -84,6 +111,8 @@ export const StoryDetail = ({ story, onBack }: StoryDetailProps) => {
   };
 
   const handleExpandComment = () => {
+    if (isStorySelected) return;
+
     const selectedComment = visibleComments[selectedIndex];
     const validChildrenCount = getValidChildrenCount(selectedComment.id);
 
@@ -99,13 +128,46 @@ export const StoryDetail = ({ story, onBack }: StoryDetailProps) => {
     }
   };
 
+  const selectStoryAndScrollToTop = () => {
+    setIsStorySelected(true);
+    const scrollContainer = scrollboxRef.current;
+    if (scrollContainer) {
+      scrollContainer.scrollTo(0);
+    }
+  };
+
+  const handleNavigateUp = () => {
+    if (isStorySelected) {
+      return;
+    }
+
+    if (selectedIndex === 0) {
+      selectStoryAndScrollToTop();
+      return;
+    }
+
+    navigateUp();
+  };
+
+  const selectFirstComment = () => {
+    setIsStorySelected(false);
+    setSelectedIndex(0);
+  };
+
+  const loadMoreIfNeeded = () => {
+    const shouldLoadMore = loadedParentCount < parentCommentIds.length && !loadingMore;
+    if (shouldLoadMore) {
+      loadMoreComments();
+    }
+  };
+
   const handleNavigateDown = () => {
-    navigateDown(() => {
-      const shouldLoadMore = loadedParentCount < parentCommentIds.length && !loadingMore;
-      if (shouldLoadMore) {
-        loadMoreComments();
-      }
-    });
+    if (isStorySelected) {
+      selectFirstComment();
+      return;
+    }
+
+    navigateDown(loadMoreIfNeeded);
   };
 
   useKeyboard((key) => {
@@ -135,7 +197,7 @@ export const StoryDetail = ({ story, onBack }: StoryDetailProps) => {
     }
 
     if (isKeyMatch(keyStr, config.keyBindings.navigation.up)) {
-      navigateUp();
+      handleNavigateUp();
       return;
     }
 
@@ -149,11 +211,11 @@ export const StoryDetail = ({ story, onBack }: StoryDetailProps) => {
     <box flexGrow={1} flexDirection="column" backgroundColor={theme.bg.primary}>
       <box flexGrow={1}>
         <scrollbox ref={scrollboxRef} height={height - 2} width="100%" backgroundColor={theme.bg.primary}>
-          <StoryHeader story={story} availableWidth={availableWidth} />
+          <StoryHeader story={story} availableWidth={availableWidth} isSelected={isStorySelected} />
 
           <CommentsList
             comments={visibleComments}
-            selectedIndex={selectedIndex}
+            selectedIndex={isStorySelected ? -1 : selectedIndex}
             availableWidth={availableWidth}
             expandedComments={expandedComments}
             loadingComments={loadingComments}

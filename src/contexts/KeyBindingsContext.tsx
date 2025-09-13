@@ -34,6 +34,7 @@ const defaultConfig: Config = {
     stories: {
       navigate: ['up', 'down', 'k', 'j'],
       select: ['right', 'l', 'return', 'enter'],
+      openLinks: ['space+o'],
       back: ['escape']
     },
     comments: {
@@ -154,7 +155,7 @@ export function KeyBindingsProvider({ children }: KeyBindingsProviderProps) {
         return `${kb.tabs.navigate.join('/')} navigate • ${kb.tabs.select.join('/')} to view stories`;
 
       case 'stories':
-        return `${kb.stories.navigate.join('/')} navigate • ${kb.stories.select.join('/')} to view story • ${kb.stories.back.join('/')} to go back`;
+        return `${kb.stories.navigate.join('/')} navigate • ${kb.stories.select.join('/')} to view story • ${kb.stories.openLinks.join('/')} open external link • ${kb.stories.back.join('/')} to go back`;
 
       case 'comments':
         return `${kb.comments.navigate.join('/')} navigate • ${kb.comments.expand.join('/')} expand • ${kb.comments.collapse.join('/')} collapse • ${kb.comments.openLinks.join('/')} open links • ${kb.comments.back.join('/')} back`;

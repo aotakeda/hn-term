@@ -5,14 +5,15 @@ import { styled, theme } from '../theme';
 interface StoryHeaderProps {
   story: HNStory;
   availableWidth: number;
+  isSelected?: boolean;
 }
 
-export const StoryHeader = ({ story, availableWidth }: StoryHeaderProps) => {
+export const StoryHeader = ({ story, availableWidth, isSelected = false }: StoryHeaderProps) => {
   return (
     <box
       flexDirection="column"
-      backgroundColor={theme.bg.secondary}
-      borderColor={theme.border.primary}
+      backgroundColor={isSelected ? theme.bg.selected : theme.bg.secondary}
+      borderColor={isSelected ? theme.border.focused : theme.border.primary}
       paddingBottom={1}
     >
       <text>{styled.title(story.title)}</text>

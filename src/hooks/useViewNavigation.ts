@@ -3,6 +3,7 @@ import { useTerminalDimensions } from '@opentui/react';
 import { HNStory, ViewMode, Config } from '../types';
 import { TAB_OPTIONS } from '../components/TabNavigation';
 import { useKeyBindings } from '../contexts/KeyBindingsContext';
+import { openLinksInBrowser } from '../utils/browser';
 
 export function useViewNavigation() {
   const [selectedTabIndex, setSelectedTabIndex] = useState(0);
@@ -92,7 +93,14 @@ export function useViewNavigation() {
   const handleStoryNavigation = (key: any, stories: HNStory[], config: Config, loadMoreCallback?: () => void) => {
     const keyStr = getKeyString(key);
 
-    if (handleModalKey(key)) {
+    if (handleModalKey(key, (modalKey: string) => {
+      if (modalKey === 'o' && stories.length > 0) {
+        const selectedStory = stories[selectedStoryIndex];
+        if (selectedStory?.url) {
+          openLinksInBrowser([selectedStory.url]);
+        }
+      }
+    })) {
       return;
     }
 

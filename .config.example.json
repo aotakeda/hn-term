@@ -14,12 +14,13 @@
       "modal": ["space"]
     },
     "tabs": {
-      "navigate": ["left", "right", "h", "l"],
-      "select": ["return", "enter", "down", "j"]
+      "navigate": ["up", "down", "k", "j"],
+      "select": ["right", "l", "return", "enter"]
     },
     "stories": {
       "navigate": ["up", "down", "k", "j"],
       "select": ["right", "l", "return", "enter"],
+      "openLinks": ["space+o"],
       "back": ["escape"]
     },
     "comments": {
