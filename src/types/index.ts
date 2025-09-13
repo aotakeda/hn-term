@@ -1,0 +1,75 @@
+export interface HNStory {
+  id: number;
+  title: string;
+  by: string;
+  time: number;
+  score: number;
+  descendants?: number;
+  url?: string;
+  text?: string;
+  type: string;
+  kids?: number[];
+}
+
+export interface HNComment {
+  id: number;
+  by?: string;
+  time: number;
+  text?: string;
+  kids?: number[];
+  deleted?: boolean;
+  dead?: boolean;
+  parent: number;
+  depth?: number;
+}
+
+export type HNStoryType = 'top' | 'new' | 'show' | 'ask' | 'jobs';
+
+export type ViewMode = 'tabs' | 'stories' | 'story-detail';
+
+export interface KeyBindings {
+  navigation: {
+    up: string[];
+    down: string[];
+    left: string[];
+    right: string[];
+  };
+  actions: {
+    back: string[];
+    enter: string[];
+    expand: string[];
+    collapse: string[];
+    modal: string[];
+  };
+  tabs: {
+    navigate: string[];
+    select: string[];
+  };
+  stories: {
+    navigate: string[];
+    select: string[];
+    back: string[];
+  };
+  comments: {
+    navigate: string[];
+    expand: string[];
+    collapse: string[];
+    openLinks: string[];
+    back: string[];
+  };
+}
+
+export interface Config {
+  keyBindings: KeyBindings;
+  settings: {
+    doubleKeyTimeout: number;
+    modalTimeout: number;
+    showHelpText: boolean;
+  };
+}
+
+export interface NavigationItem {
+  commentId: number;
+  comment: HNComment;
+  isVisible: boolean;
+}

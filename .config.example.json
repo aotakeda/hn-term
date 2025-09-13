@@ -1,0 +1,38 @@
+{
+  "keyBindings": {
+    "navigation": {
+      "up": ["up", "k"],
+      "down": ["down", "j"],
+      "left": ["left", "h"],
+      "right": ["right", "l"]
+    },
+    "actions": {
+      "back": ["escape"],
+      "enter": ["return", "enter"],
+      "expand": ["right", "l"],
+      "collapse": ["left", "h"],
+      "modal": ["space"]
+    },
+    "tabs": {
+      "navigate": ["left", "right", "h", "l"],
+      "select": ["return", "enter", "down", "j"]
+    },
+    "stories": {
+      "navigate": ["up", "down", "k", "j"],
+      "select": ["right", "l", "return", "enter"],
+      "back": ["escape"]
+    },
+    "comments": {
+      "navigate": ["up", "down", "k", "j"],
+      "expand": ["right", "l"],
+      "collapse": ["left", "h"],
+      "openLinks": ["space+o"],
+      "back": ["escape"]
+    }
+  },
+  "settings": {
+    "doubleKeyTimeout": 500,
+    "modalTimeout": 2000,
+    "showHelpText": true
+  }
+}
