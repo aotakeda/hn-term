@@ -29,6 +29,7 @@ export const Comment = ({
   const hasValidChildren = validChildrenCount > 0;
   const hasDeletedReplies = hasKids && !hasValidChildren;
 
+
   const getReplyStatus = () => {
     if (loadingComments.has(comment.id)) {
       return ` • Loading comments...`;
@@ -65,16 +66,26 @@ export const Comment = ({
             )
           )}
         </text>
-        {comment.text && (
-          <text>
-            {styled.primary(
-              wrapText(
-                stripHtml(comment.text),
-                effectiveWidth
-              )
-            )}
-          </text>
-        )}
+        {comment.text && (() => {
+          const processedText = stripHtml(comment.text);
+          const urlRegex = /(https?:\/\/[^\s]+)/g;
+          const parts = processedText.split(urlRegex);
+
+          return (
+            <box flexDirection="column">
+              {parts.map((part, index) => (
+                part && (
+                  <text key={index}>
+                    {urlRegex.test(part)
+                      ? styled.link(wrapText(part, effectiveWidth))
+                      : styled.primary(wrapText(part, effectiveWidth))
+                    }
+                  </text>
+                )
+              ))}
+            </box>
+          );
+        })()}
       </box>
     </box>
   );
