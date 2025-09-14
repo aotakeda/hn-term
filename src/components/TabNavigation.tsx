@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { HNStoryType } from '../types';
+import { HNStoryType, HNApiStoryType } from '../types';
 import { styled, theme } from '../theme';
 
 interface TabOption {
@@ -8,12 +8,18 @@ interface TabOption {
   value: HNStoryType;
 }
 
-interface TabNavigationProps {
-  selectedIndex: number;
-  onStoryTypeChange: (storyType: HNStoryType) => void;
+interface ApiTabOption {
+  name: string;
+  description: string;
+  value: HNApiStoryType;
 }
 
-export const TAB_OPTIONS: TabOption[] = [
+interface TabNavigationProps {
+  selectedIndex: number;
+  onStoryTypeChange: (storyType: HNApiStoryType) => void;
+}
+
+const API_TAB_OPTIONS: ApiTabOption[] = [
   { name: "Top", description: "Top stories of the day", value: "top" },
   { name: "New", description: "Newest stories", value: "new" },
   { name: "Show", description: "Show HN stories", value: "show" },
@@ -21,11 +27,19 @@ export const TAB_OPTIONS: TabOption[] = [
   { name: "Jobs", description: "Jobs postings", value: "jobs" }
 ];
 
+export const TAB_OPTIONS: TabOption[] = [
+  ...API_TAB_OPTIONS,
+  { name: "Repository", description: "Check the code, it's open-source!", value: "repository" }
+];
+
 export const TabNavigation = ({ selectedIndex, onStoryTypeChange }: TabNavigationProps) => {
   useEffect(() => {
     const selectedOption = TAB_OPTIONS[selectedIndex];
-    if (selectedOption) {
-      onStoryTypeChange(selectedOption.value);
+    if (selectedOption && selectedOption.value !== 'repository') {
+      const apiOption = API_TAB_OPTIONS.find(opt => opt.value === selectedOption.value);
+      if (apiOption) {
+        onStoryTypeChange(apiOption.value);
+      }
     }
   }, [selectedIndex, onStoryTypeChange]);
 

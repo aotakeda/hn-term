@@ -9,10 +9,10 @@ import { StoryList } from './components/StoryList';
 import { Footer } from './components/Footer';
 import { StoryDetail } from './components/StoryDetail';
 import { theme } from './theme';
-import { HNStoryType } from './types';
+import { HNApiStoryType } from './types';
 
 const AppContent = () => {
-  const [activeStoryType, setActiveStoryType] = useState<HNStoryType>('top');
+  const [activeStoryType, setActiveStoryType] = useState<HNApiStoryType>('top');
   const { stories, loading, loadingMore, error, hasMore, loadMore, totalCount } = useHackerNews(activeStoryType, 15);
   const { config } = useKeyBindings();
 
@@ -74,6 +74,7 @@ const AppContent = () => {
       <Footer
         viewMode={viewMode}
         selectedStoryIndex={selectedStoryIndex}
+        selectedTabIndex={selectedTabIndex}
         stories={stories}
         loading={loading}
         loadingMore={loadingMore}

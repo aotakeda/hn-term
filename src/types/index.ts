@@ -23,7 +23,8 @@ export interface HNComment {
   depth?: number;
 }
 
-export type HNStoryType = 'top' | 'new' | 'show' | 'ask' | 'jobs';
+export type HNApiStoryType = 'top' | 'new' | 'show' | 'ask' | 'jobs';
+export type HNStoryType = HNApiStoryType | 'repository';
 
 export type ViewMode = 'tabs' | 'stories' | 'story-detail';
 

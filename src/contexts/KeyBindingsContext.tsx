@@ -9,7 +9,7 @@ interface KeyBindingsContextType {
   isKeyMatch: (keyStr: string, keyList: string[]) => boolean;
   isDoubleKeyMatch: (keyStr: string, keyList: string[], lastKey: string, lastTime: number) => boolean;
   handleModalKey: (key: any, callback?: (key: string) => void) => boolean;
-  getHelpText: (context: 'tabs' | 'stories' | 'comments') => string;
+  getHelpText: (context: 'tabs' | 'stories' | 'comments', selectedTabValue?: string) => string;
 }
 
 const defaultConfig: Config = {
@@ -145,14 +145,15 @@ export function KeyBindingsProvider({ children }: KeyBindingsProviderProps) {
     return false;
   };
 
-  const getHelpText = (context: 'tabs' | 'stories' | 'comments'): string => {
+  const getHelpText = (context: 'tabs' | 'stories' | 'comments', selectedTabValue?: string): string => {
     if (!config.settings.showHelpText) return '';
 
     const kb = config.keyBindings;
 
     switch (context) {
       case 'tabs':
-        return `${kb.tabs.navigate.join('/')} navigate • ${kb.tabs.select.join('/')} to view stories`;
+        const selectAction = selectedTabValue === 'repository' ? 'to open repository' : 'to view stories';
+        return `${kb.tabs.navigate.join('/')} navigate • ${kb.tabs.select.join('/')} ${selectAction}`;
 
       case 'stories':
         return `${kb.stories.navigate.join('/')} navigate • ${kb.stories.select.join('/')} to view story • ${kb.stories.openLinks.join('/')} open external link • ${kb.stories.back.join('/')} to go back`;

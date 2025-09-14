@@ -19,7 +19,7 @@ export const StoryHeader = ({ story, availableWidth, isSelected = false }: Story
       <text>{styled.title(story.title)}</text>
       <text>
         {styled.tertiary(`${formatScore(story.score)} by ${story.by} | ${formatTimeAgo(story.time)}`)}
-        {story.descendants !== undefined && styled.tertiary(` | ${story.descendants} comments`)}
+        {story.descendants !== undefined && story.type !== 'job' && styled.tertiary(` | ${story.descendants} comments`)}
       </text>
       {story.url && (
         <text>{styled.link(`URL: ${story.url}`)}</text>

@@ -35,6 +35,10 @@ export function useViewNavigation() {
     }
 
     if (isKeyMatch(keyStr, config.keyBindings.tabs.select)) {
+      if (TAB_OPTIONS[selectedTabIndex]?.value === 'repository') {
+        openLinksInBrowser(['https://github.com/aotakeda/hn-term']);
+        return;
+      }
       setViewMode('stories');
       setSelectedStoryIndex(0);
       return;
@@ -80,7 +84,14 @@ export function useViewNavigation() {
   const handleSelectStory = (stories: HNStory[]) => {
     if (stories.length === 0) return;
 
-    setSelectedStory(stories[selectedStoryIndex]);
+    const selectedStory = stories[selectedStoryIndex];
+
+    if (selectedStory.type === 'job' && selectedStory.url) {
+      openLinksInBrowser([selectedStory.url]);
+      return;
+    }
+
+    setSelectedStory(selectedStory);
     setViewMode('story-detail');
   };
 
