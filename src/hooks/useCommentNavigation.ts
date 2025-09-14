@@ -75,7 +75,13 @@ export const useCommentNavigation = ({
       const scrollToTop = () => scrollContainer.scrollTo(commentTop);
       const scrollToFitBottom = () => {
         const newScrollTop = commentBottom - commentsAreaHeight;
-        scrollContainer.scrollTo(Math.max(0, newScrollTop));
+        const isLastComment = commentIndex === visibleComments.length - 1;
+
+        if (isLastComment) {
+          scrollContainer.scrollTo(scrollContainer.scrollHeight);
+        } else {
+          scrollContainer.scrollTo(Math.max(0, newScrollTop));
+        }
       };
 
       if (isCommentTallerThanViewport) {
