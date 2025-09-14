@@ -6,7 +6,7 @@ import { TAB_OPTIONS } from '../components/TabNavigation';
 import { useKeyBindings } from '../contexts/KeyBindingsContext';
 import { openLinksInBrowser } from '../utils/browser';
 
-export function useViewNavigation() {
+export const useViewNavigation = () => {
   const [selectedTabIndex, setSelectedTabIndex] = useState(0);
   const [viewMode, setViewMode] = useState<ViewMode>('tabs');
   const [selectedStoryIndex, setSelectedStoryIndex] = useState(0);
@@ -159,6 +159,10 @@ export function useViewNavigation() {
     setViewMode('story-detail');
   };
 
+  const updateSelectedStory = (updatedStory: HNStory) => {
+    setSelectedStory(updatedStory);
+  };
+
   return {
     selectedTabIndex,
     viewMode,
@@ -170,6 +174,7 @@ export function useViewNavigation() {
     handleStoryNavigation,
     handleBackFromStory,
     selectStory,
+    updateSelectedStory,
     setTabIndex
   };
 }

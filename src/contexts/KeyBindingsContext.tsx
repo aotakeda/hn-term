@@ -63,7 +63,7 @@ interface KeyBindingsProviderProps {
   children: ReactNode;
 }
 
-export function KeyBindingsProvider({ children }: KeyBindingsProviderProps) {
+export const KeyBindingsProvider = ({ children }: KeyBindingsProviderProps) => {
   const [config, setConfig] = useState<Config>(defaultConfig);
   const [isModalMode, setIsModalMode] = useState(false);
   const [modalTimeout, setModalTimeout] = useState<NodeJS.Timeout | null>(null);
@@ -189,7 +189,7 @@ export function KeyBindingsProvider({ children }: KeyBindingsProviderProps) {
   );
 }
 
-export function useKeyBindings(): KeyBindingsContextType {
+export const useKeyBindings = (): KeyBindingsContextType => {
   const context = useContext(KeyBindingsContext);
   if (context === undefined) {
     throw new Error('useKeyBindings must be used within a KeyBindingsProvider');

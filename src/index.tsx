@@ -25,6 +25,7 @@ const AppContent = () => {
     handleTabNavigation,
     handleStoryNavigation,
     handleBackFromStory,
+    updateSelectedStory,
   } = useViewNavigation();
 
   useKeyboard((key) => {
@@ -40,7 +41,7 @@ const AppContent = () => {
   });
 
   if (viewMode === 'story-detail' && selectedStory) {
-    return <StoryDetail story={selectedStory} onBack={handleBackFromStory} />;
+    return <StoryDetail story={selectedStory} onBack={handleBackFromStory} onStoryUpdate={updateSelectedStory} />;
   }
 
   return (

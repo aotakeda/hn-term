@@ -45,7 +45,10 @@ export const Footer = ({
       }
       if (loadingMore) {
         content += ' • Loading more...';
-      } else if (!hasMore && totalCount) {
+        return content;
+      }
+
+      if (!hasMore && totalCount) {
         content += ' • All stories loaded';
       }
 

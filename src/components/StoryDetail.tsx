@@ -8,16 +8,34 @@ import { useComments } from '../hooks/useComments';
 import { useCommentNavigation } from '../hooks/useCommentNavigation';
 import { StoryHeader } from './StoryHeader';
 import { CommentsList } from './CommentsList';
+import { HN_API_BASE } from '../constants/api';
 
 interface StoryDetailProps {
   story: HNStory;
   onBack: () => void;
+  onStoryUpdate?: (updatedStory: HNStory) => void;
 }
 
-export const StoryDetail = ({ story, onBack }: StoryDetailProps) => {
+export const StoryDetail = ({ story, onBack, onStoryUpdate }: StoryDetailProps) => {
   const { width, height } = useTerminalDimensions();
   const { config, isModalMode, getKeyString, isKeyMatch, handleModalKey, getHelpText } = useKeyBindings();
   const [isStorySelected, setIsStorySelected] = useState(true);
+
+  const fetchUpdatedStory = async (): Promise<void> => {
+    if (!onStoryUpdate) return;
+
+    try {
+      const response = await fetch(`${HN_API_BASE}/item/${story.id}.json`);
+      if (!response.ok) return;
+
+      const updatedStory = await response.json();
+      if (updatedStory) {
+        onStoryUpdate(updatedStory);
+      }
+    } catch (error) {
+      console.warn('Failed to fetch updated story data:', error);
+    }
+  };
 
   const commentsAreaHeight = height - 2;
   const availableWidth = Math.max(40, width - 8);
@@ -65,7 +83,8 @@ export const StoryDetail = ({ story, onBack }: StoryDetailProps) => {
   } = useCommentNavigation({
     visibleComments,
     headerHeight,
-    commentsAreaHeight
+    commentsAreaHeight,
+    hasMoreParentComments: loadedParentCount < parentCommentIds.length,
   });
 
   const openStoryLinks = () => {
@@ -95,9 +114,10 @@ export const StoryDetail = ({ story, onBack }: StoryDetailProps) => {
   const handleOpenLinks = () => {
     if (isStorySelected) {
       openStoryLinks();
-    } else {
-      openCommentLinks();
+      return;
     }
+
+    openCommentLinks();
   };
 
   const handleCollapseComment = () => {
@@ -189,6 +209,7 @@ export const StoryDetail = ({ story, onBack }: StoryDetailProps) => {
 
     if (isKeyMatch(keyStr, config.keyBindings.comments.refresh)) {
       refetchComments();
+      fetchUpdatedStory();
       setIsStorySelected(true);
       setSelectedIndex(0);
       return;

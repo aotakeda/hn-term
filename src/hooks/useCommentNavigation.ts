@@ -6,6 +6,7 @@ interface UseCommentNavigationProps {
   visibleComments: HNComment[];
   headerHeight: number;
   commentsAreaHeight: number;
+  hasMoreParentComments?: boolean;
 }
 
 const INDENT_SIZE = 2;
@@ -17,7 +18,8 @@ const LOAD_MORE_THRESHOLD = 10;
 export const useCommentNavigation = ({
   visibleComments,
   headerHeight,
-  commentsAreaHeight
+  commentsAreaHeight,
+  hasMoreParentComments = false,
 }: UseCommentNavigationProps) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [commentHeights, setCommentHeights] = useState<Map<number, number>>(new Map());
@@ -76,13 +78,15 @@ export const useCommentNavigation = ({
       const scrollToTop = () => scrollContainer.scrollTo(commentTop);
       const scrollToFitBottom = () => {
         const newScrollTop = commentBottom - commentsAreaHeight;
-        const isLastComment = commentIndex === visibleComments.length - 1;
+        const isLastVisibleComment = commentIndex === visibleComments.length - 1;
+        const isAbsoluteLastComment = isLastVisibleComment && !hasMoreParentComments;
 
-        if (isLastComment) {
+        if (isAbsoluteLastComment) {
           scrollContainer.scrollTo(scrollContainer.scrollHeight);
-        } else {
-          scrollContainer.scrollTo(Math.max(0, newScrollTop));
+          return;
         }
+
+        scrollContainer.scrollTo(Math.max(0, newScrollTop));
       };
 
       if (isCommentTallerThanViewport) {
@@ -91,11 +95,13 @@ export const useCommentNavigation = ({
       }
 
       const isCommentAboveViewport = commentTop < viewportTop;
-      const isCommentBelowViewport = commentBottom > viewportBottom;
-
       if (isCommentAboveViewport) {
         scrollToTop();
-      } else if (isCommentBelowViewport) {
+        return;
+      }
+
+      const isCommentBelowViewport = commentBottom > viewportBottom;
+      if (isCommentBelowViewport) {
         scrollToFitBottom();
       }
     });
@@ -123,7 +129,10 @@ export const useCommentNavigation = ({
       if (isNearEnd && loadMoreCallback) {
         loadMoreCallback();
       }
-    } else if (loadMoreCallback) {
+      return;
+    }
+
+    if (loadMoreCallback) {
       loadMoreCallback();
     }
   }, [selectedIndex, visibleComments.length, scrollToComment]);

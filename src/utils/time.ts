@@ -1,4 +1,4 @@
-export function formatTimeAgo(unixTime: number): string {
+export const formatTimeAgo = (unixTime: number): string => {
   const now = Date.now() / 1000;
   const diff = now - unixTime;
 
@@ -12,7 +12,7 @@ export function formatTimeAgo(unixTime: number): string {
   return 'just now';
 }
 
-export function formatScore(score?: number): string {
+export const formatScore = (score?: number): string => {
   if (!score) return '0 points';
   return `${score} point${score === 1 ? '' : 's'}`;
 }

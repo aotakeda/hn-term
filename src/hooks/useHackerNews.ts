@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { HNStory, HNApiStoryType } from '../types';
 import { HN_API_BASE, STORY_ENDPOINTS } from '../constants/api';
 
-export function useHackerNews(storyType: HNApiStoryType, initialLimit: number = 30) {
+export const useHackerNews = (storyType: HNApiStoryType, initialLimit: number = 30) => {
   const [stories, setStories] = useState<HNStory[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);

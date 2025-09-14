@@ -1,4 +1,4 @@
-export function wrapText(text: string, maxWidth: number, indent: string = ""): string {
+export const wrapText = (text: string, maxWidth: number, indent: string = ""): string => {
   const words = text.split(' ');
   const lines: string[] = [];
   let currentLine = indent;
@@ -24,7 +24,7 @@ export function wrapText(text: string, maxWidth: number, indent: string = ""): s
   return lines.join('\n');
 }
 
-export function stripHtml(html: string): string {
+export const stripHtml = (html: string): string => {
   return html
     .replace(/<p>/g, '\n\n')
     .replace(/<br\s*\/?>/gi, '\n')
@@ -42,7 +42,7 @@ export function stripHtml(html: string): string {
     .trim();
 }
 
-export function extractLinks(html: string): string[] {
+export const extractLinks = (html: string): string[] => {
   const links: string[] = [];
   const linkRegex = /<a[^>]*href="([^"]*)"[^>]*>/gi;
   let match;

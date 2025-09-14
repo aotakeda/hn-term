@@ -1,4 +1,16 @@
-export async function openLinksInBrowser(links: string[]): Promise<void> {
+const getOpenCommand = (platform: string, link: string): string => {
+  if (platform === 'darwin') {
+    return `open "${link}"`;
+  }
+
+  if (platform === 'win32') {
+    return `start "${link}"`;
+  }
+
+  return `xdg-open "${link}"`;
+};
+
+export const openLinksInBrowser = async (links: string[]): Promise<void> => {
   if (links.length === 0) return;
 
   try {
@@ -6,14 +18,7 @@ export async function openLinksInBrowser(links: string[]): Promise<void> {
     const platform = process.platform;
 
     for (const link of links) {
-      let command: string;
-      if (platform === 'darwin') {
-        command = `open "${link}"`;
-      } else if (platform === 'win32') {
-        command = `start "${link}"`;
-      } else {
-        command = `xdg-open "${link}"`;
-      }
+      const command = getOpenCommand(platform, link);
 
       exec(command, (error: unknown) => {
         if (error) {
