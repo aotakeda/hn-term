@@ -48,6 +48,7 @@ export const StoryDetail = ({ story, onBack }: StoryDetailProps) => {
     expandComment,
     collapseComment,
     loadMoreComments,
+    refetchComments,
     getValidChildrenCount
   } = useComments({
     parentCommentIds
@@ -183,6 +184,13 @@ export const StoryDetail = ({ story, onBack }: StoryDetailProps) => {
 
     if (isKeyMatch(keyStr, config.keyBindings.comments.back)) {
       onBack();
+      return;
+    }
+
+    if (isKeyMatch(keyStr, config.keyBindings.comments.refresh)) {
+      refetchComments();
+      setIsStorySelected(true);
+      setSelectedIndex(0);
       return;
     }
 

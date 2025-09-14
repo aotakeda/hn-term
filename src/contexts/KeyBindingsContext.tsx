@@ -1,14 +1,15 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import type { ParsedKey } from '@opentui/core';
 import { Config } from '../types';
 
 interface KeyBindingsContextType {
   config: Config;
   isModalMode: boolean;
   setIsModalMode: (mode: boolean) => void;
-  getKeyString: (key: any) => string;
+  getKeyString: (key: ParsedKey) => string;
   isKeyMatch: (keyStr: string, keyList: string[]) => boolean;
   isDoubleKeyMatch: (keyStr: string, keyList: string[], lastKey: string, lastTime: number) => boolean;
-  handleModalKey: (key: any, callback?: (key: string) => void) => boolean;
+  handleModalKey: (key: ParsedKey, callback?: (key: string) => void) => boolean;
   getHelpText: (context: 'tabs' | 'stories' | 'comments', selectedTabValue?: string) => string;
 }
 
@@ -25,24 +26,28 @@ const defaultConfig: Config = {
       enter: ['return', 'enter'],
       expand: ['right', 'l'],
       collapse: ['left', 'h'],
-      modal: ['space']
+      modal: ['space'],
+      refresh: ['r']
     },
     tabs: {
       navigate: ['up', 'down', 'k', 'j'],
-      select: ['right', 'l', 'return', 'enter']
+      select: ['right', 'l', 'return', 'enter'],
+      refresh: ['r']
     },
     stories: {
       navigate: ['up', 'down', 'k', 'j'],
       select: ['right', 'l', 'return', 'enter'],
       openLinks: ['space+o'],
-      back: ['escape']
+      back: ['escape'],
+      refresh: ['r']
     },
     comments: {
       navigate: ['up', 'down', 'k', 'j'],
       expand: ['right', 'l'],
       collapse: ['left', 'h'],
       openLinks: ['space+o'],
-      back: ['escape']
+      back: ['escape'],
+      refresh: ['r']
     }
   },
   settings: {
@@ -86,8 +91,8 @@ export function KeyBindingsProvider({ children }: KeyBindingsProviderProps) {
     loadConfig();
   }, []);
 
-  const getKeyString = (key: any): string => {
-    return typeof key === 'string' ? key : key.name || '';
+  const getKeyString = (key: ParsedKey): string => {
+    return key.name || '';
   };
 
   const isKeyMatch = (keyStr: string, keyList: string[]): boolean => {
@@ -128,7 +133,7 @@ export function KeyBindingsProvider({ children }: KeyBindingsProviderProps) {
     }
   };
 
-  const handleModalKey = (key: any, callback?: (key: string) => void): boolean => {
+  const handleModalKey = (key: ParsedKey, callback?: (key: string) => void): boolean => {
     const keyStr = getKeyString(key);
 
     if (isKeyMatch(keyStr, config.keyBindings.actions.modal)) {
@@ -153,13 +158,13 @@ export function KeyBindingsProvider({ children }: KeyBindingsProviderProps) {
     switch (context) {
       case 'tabs':
         const selectAction = selectedTabValue === 'repository' ? 'to open repository' : 'to view stories';
-        return `${kb.tabs.navigate.join('/')} navigate • ${kb.tabs.select.join('/')} ${selectAction}`;
+        return `${kb.tabs.navigate.join('/')} navigate • ${kb.tabs.select.join('/')} ${selectAction} • ${kb.tabs.refresh.join('/')} refresh`;
 
       case 'stories':
-        return `${kb.stories.navigate.join('/')} navigate • ${kb.stories.select.join('/')} to view story • ${kb.stories.openLinks.join('/')} open external link • ${kb.stories.back.join('/')} to go back`;
+        return `${kb.stories.navigate.join('/')} navigate • ${kb.stories.select.join('/')} to view story • ${kb.stories.openLinks.join('/')} open external link • ${kb.stories.refresh.join('/')} refresh • ${kb.stories.back.join('/')} to go back`;
 
       case 'comments':
-        return `${kb.comments.navigate.join('/')} navigate • ${kb.comments.expand.join('/')} expand • ${kb.comments.collapse.join('/')} collapse • ${kb.comments.openLinks.join('/')} open links • ${kb.comments.back.join('/')} back`;
+        return `${kb.comments.navigate.join('/')} navigate • ${kb.comments.expand.join('/')} expand • ${kb.comments.collapse.join('/')} collapse • ${kb.comments.openLinks.join('/')} open links • ${kb.comments.refresh.join('/')} refresh • ${kb.comments.back.join('/')} back`;
 
       default:
         return '';

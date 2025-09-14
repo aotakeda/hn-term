@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTerminalDimensions } from '@opentui/react';
+import type { ParsedKey } from '@opentui/core';
 import { HNStory, ViewMode, Config } from '../types';
 import { TAB_OPTIONS } from '../components/TabNavigation';
 import { useKeyBindings } from '../contexts/KeyBindingsContext';
@@ -17,7 +18,7 @@ export function useViewNavigation() {
   const storiesPerScreen = Math.floor(visibleHeight / 8);
   const { getKeyString, isKeyMatch, handleModalKey } = useKeyBindings();
 
-  const handleTabNavigation = (key: any, config: Config) => {
+  const handleTabNavigation = (key: ParsedKey, config: Config, refetchCallback?: () => void) => {
     const keyStr = getKeyString(key);
 
     if (handleModalKey(key)) {
@@ -41,6 +42,11 @@ export function useViewNavigation() {
       }
       setViewMode('stories');
       setSelectedStoryIndex(0);
+      return;
+    }
+
+    if (isKeyMatch(keyStr, config.keyBindings.tabs.refresh) && refetchCallback) {
+      refetchCallback();
       return;
     }
   };
@@ -101,7 +107,7 @@ export function useViewNavigation() {
     setSelectedStoryIndex(0);
   };
 
-  const handleStoryNavigation = (key: any, stories: HNStory[], config: Config, loadMoreCallback?: () => void) => {
+  const handleStoryNavigation = (key: ParsedKey, stories: HNStory[], config: Config, loadMoreCallback?: () => void, refetchCallback?: () => void) => {
     const keyStr = getKeyString(key);
 
     if (handleModalKey(key, (modalKey: string) => {
@@ -132,6 +138,13 @@ export function useViewNavigation() {
 
     if (isKeyMatch(keyStr, config.keyBindings.stories.back)) {
       handleBackToTabs();
+      return;
+    }
+
+    if (isKeyMatch(keyStr, config.keyBindings.stories.refresh) && refetchCallback) {
+      refetchCallback();
+      setSelectedStoryIndex(0);
+      setStoryScrollOffset(0);
       return;
     }
   };

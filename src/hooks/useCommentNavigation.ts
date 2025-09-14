@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
+import type { ScrollBoxRenderable } from '@opentui/core';
 import { HNComment } from '../types';
 
 interface UseCommentNavigationProps {
@@ -20,7 +21,7 @@ export const useCommentNavigation = ({
 }: UseCommentNavigationProps) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [commentHeights, setCommentHeights] = useState<Map<number, number>>(new Map());
-  const scrollboxRef = useRef<any>(null);
+  const scrollboxRef = useRef<ScrollBoxRenderable | null>(null);
 
   const calculateCommentHeight = useCallback((comment: HNComment, availableWidth: number): number => {
     const indentWidth = (comment.depth || 0) * INDENT_SIZE;

@@ -41,16 +41,19 @@ export interface KeyBindings {
     expand: string[];
     collapse: string[];
     modal: string[];
+    refresh: string[];
   };
   tabs: {
     navigate: string[];
     select: string[];
+    refresh: string[];
   };
   stories: {
     navigate: string[];
     select: string[];
     openLinks: string[];
     back: string[];
+    refresh: string[];
   };
   comments: {
     navigate: string[];
@@ -58,6 +61,7 @@ export interface KeyBindings {
     collapse: string[];
     openLinks: string[];
     back: string[];
+    refresh: string[];
   };
 }
 

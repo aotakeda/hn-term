@@ -19,6 +19,7 @@ interface UseCommentsReturn {
   expandComment: (commentId: number) => Promise<void>;
   collapseComment: (commentId: number) => void;
   loadMoreComments: () => Promise<void>;
+  refetchComments: () => Promise<void>;
   setAllComments: React.Dispatch<React.SetStateAction<Map<number, HNComment>>>;
   setNavigationOrder: React.Dispatch<React.SetStateAction<NavigationItem[]>>;
   setExpandedComments: React.Dispatch<React.SetStateAction<Set<number>>>;
@@ -201,51 +202,56 @@ export const useComments = ({ parentCommentIds }: UseCommentsProps): UseComments
     }
   };
 
+  const loadInitialComments = async () => {
+    if (!parentCommentIds || parentCommentIds.length === 0) {
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    setAllComments(new Map());
+    setNavigationOrder([]);
+    setLoadedParentCount(0);
+    setLoadingComments(new Set());
+    setExpandedComments(new Set());
+
+    try {
+      const initialParents = parentCommentIds.slice(0, Math.min(PARENTS_PER_BATCH, parentCommentIds.length));
+      const initialComments: HNComment[] = [];
+
+      for (const parentId of initialParents) {
+        const parentComment = await fetchParentOnly(parentId);
+        if (parentComment) {
+          initialComments.push(parentComment);
+        }
+      }
+
+      if (initialComments.length > 0) {
+        const commentsMap = new Map();
+        initialComments.forEach(comment => commentsMap.set(comment.id, comment));
+        setAllComments(commentsMap);
+
+        const navItems: NavigationItem[] = initialComments.map(comment => ({
+          commentId: comment.id,
+          comment: comment,
+          isVisible: true
+        }));
+        setNavigationOrder(navItems);
+      }
+
+      setLoadedParentCount(initialParents.length);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load comments');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const refetchComments = async () => {
+    await loadInitialComments();
+  };
+
   useEffect(() => {
-    const loadInitialComments = async () => {
-      if (!parentCommentIds || parentCommentIds.length === 0) {
-        return;
-      }
-
-      setLoading(true);
-      setError(null);
-      setAllComments(new Map());
-      setNavigationOrder([]);
-      setLoadedParentCount(0);
-      setLoadingComments(new Set());
-
-      try {
-        const initialParents = parentCommentIds.slice(0, Math.min(PARENTS_PER_BATCH, parentCommentIds.length));
-        const initialComments: HNComment[] = [];
-
-        for (const parentId of initialParents) {
-          const parentComment = await fetchParentOnly(parentId);
-          if (parentComment) {
-            initialComments.push(parentComment);
-          }
-        }
-
-        if (initialComments.length > 0) {
-          const commentsMap = new Map();
-          initialComments.forEach(comment => commentsMap.set(comment.id, comment));
-          setAllComments(commentsMap);
-
-          const navItems: NavigationItem[] = initialComments.map(comment => ({
-            commentId: comment.id,
-            comment: comment,
-            isVisible: true
-          }));
-          setNavigationOrder(navItems);
-        }
-
-        setLoadedParentCount(initialParents.length);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load comments');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadInitialComments();
   }, [parentCommentIds]);
 
@@ -262,6 +268,7 @@ export const useComments = ({ parentCommentIds }: UseCommentsProps): UseComments
     expandComment,
     collapseComment,
     loadMoreComments,
+    refetchComments,
     setAllComments,
     setNavigationOrder,
     setExpandedComments,

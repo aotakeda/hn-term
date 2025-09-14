@@ -11,24 +11,28 @@
       "enter": ["return", "enter"],
       "expand": ["right", "l"],
       "collapse": ["left", "h"],
-      "modal": ["space"]
+      "modal": ["space"],
+      "refresh": ["r"]
     },
     "tabs": {
       "navigate": ["up", "down", "k", "j"],
-      "select": ["right", "l", "return", "enter"]
+      "select": ["right", "l", "return", "enter"],
+      "refresh": ["r"]
     },
     "stories": {
       "navigate": ["up", "down", "k", "j"],
       "select": ["right", "l", "return", "enter"],
       "openLinks": ["space+o"],
-      "back": ["escape"]
+      "back": ["escape"],
+      "refresh": ["r"]
     },
     "comments": {
       "navigate": ["up", "down", "k", "j"],
       "expand": ["right", "l"],
       "collapse": ["left", "h"],
       "openLinks": ["space+o"],
-      "back": ["escape"]
+      "back": ["escape"],
+      "refresh": ["r"]
     }
   },
   "settings": {

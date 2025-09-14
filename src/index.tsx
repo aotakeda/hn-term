@@ -13,7 +13,7 @@ import { HNApiStoryType } from './types';
 
 const AppContent = () => {
   const [activeStoryType, setActiveStoryType] = useState<HNApiStoryType>('top');
-  const { stories, loading, loadingMore, error, hasMore, loadMore, totalCount } = useHackerNews(activeStoryType, 15);
+  const { stories, loading, loadingMore, error, hasMore, loadMore, totalCount, refetch } = useHackerNews(activeStoryType, 15);
   const { config } = useKeyBindings();
 
   const {
@@ -29,12 +29,12 @@ const AppContent = () => {
 
   useKeyboard((key) => {
     if (viewMode === 'tabs') {
-      handleTabNavigation(key, config);
+      handleTabNavigation(key, config, refetch);
       return;
     }
 
     if (viewMode === 'stories') {
-      handleStoryNavigation(key, stories, config, hasMore ? loadMore : undefined);
+      handleStoryNavigation(key, stories, config, hasMore ? loadMore : undefined, refetch);
       return;
     }
   });
