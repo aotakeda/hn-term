@@ -1,8 +1,9 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import type { ParsedKey } from '@opentui/core';
 import { Config } from '../types';
+import { setTheme } from '../theme';
 
-interface KeyBindingsContextType {
+interface ConfigContextType {
   config: Config;
   isModalMode: boolean;
   setIsModalMode: (mode: boolean) => void;
@@ -57,31 +58,47 @@ const defaultConfig: Config = {
   }
 };
 
-const KeyBindingsContext = createContext<KeyBindingsContextType | undefined>(undefined);
+const ConfigContext = createContext<ConfigContextType | undefined>(undefined);
 
-interface KeyBindingsProviderProps {
+interface ConfigProviderProps {
   children: ReactNode;
 }
 
-export const KeyBindingsProvider = ({ children }: KeyBindingsProviderProps) => {
+export const ConfigProvider = ({ children }: ConfigProviderProps) => {
   const [config, setConfig] = useState<Config>(defaultConfig);
   const [isModalMode, setIsModalMode] = useState(false);
   const [modalTimeout, setModalTimeout] = useState<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const loadConfig = async () => {
+      const loadConfigFile = async (filename: string) => {
+        const configFile = Bun.file(filename);
+        if (await configFile.exists()) {
+          try {
+            const module = await import(`../../${filename}`);
+            return module.defaultConfig || module.default || module.config;
+          } catch (error) {
+            console.warn(`Failed to import ${filename}:`, error);
+            return null;
+          }
+        }
+        return null;
+      };
+
       try {
-        const userConfigResponse = await fetch('/.config.json').catch(() => null);
-        if (userConfigResponse?.ok) {
-          const userConfig = await userConfigResponse.json();
-          setConfig({ ...defaultConfig, ...userConfig });
+        const userConfig = await loadConfigFile('.config.ts');
+        if (userConfig) {
+          const mergedConfig = { ...defaultConfig, ...userConfig };
+          setConfig(mergedConfig);
+          setTheme(mergedConfig.theme);
           return;
         }
 
-        const exampleConfigResponse = await fetch('/.config.example.json');
-        if (exampleConfigResponse.ok) {
-          const exampleConfig = await exampleConfigResponse.json();
-          setConfig({ ...defaultConfig, ...exampleConfig });
+        const exampleConfig = await loadConfigFile('.config.default.ts');
+        if (exampleConfig) {
+          const mergedConfig = { ...defaultConfig, ...exampleConfig };
+          setConfig(mergedConfig);
+          setTheme(mergedConfig.theme);
         }
       } catch (error) {
         console.warn('Failed to load config, using defaults:', error);
@@ -171,7 +188,7 @@ export const KeyBindingsProvider = ({ children }: KeyBindingsProviderProps) => {
     }
   };
 
-  const contextValue: KeyBindingsContextType = {
+  const contextValue: ConfigContextType = {
     config,
     isModalMode,
     setIsModalMode,
@@ -183,16 +200,16 @@ export const KeyBindingsProvider = ({ children }: KeyBindingsProviderProps) => {
   };
 
   return (
-    <KeyBindingsContext.Provider value={contextValue}>
+    <ConfigContext.Provider value={contextValue}>
       {children}
-    </KeyBindingsContext.Provider>
+    </ConfigContext.Provider>
   );
 }
 
-export const useKeyBindings = (): KeyBindingsContextType => {
-  const context = useContext(KeyBindingsContext);
+export const useConfig = (): ConfigContextType => {
+  const context = useContext(ConfigContext);
   if (context === undefined) {
-    throw new Error('useKeyBindings must be used within a KeyBindingsProvider');
+    throw new Error('useConfig must be used within a ConfigProvider');
   }
   return context;
 }

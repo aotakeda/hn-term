@@ -2,7 +2,7 @@ import { render, useKeyboard } from '@opentui/react';
 import { useState } from 'react';
 import { useHackerNews } from './hooks/useHackerNews';
 import { useViewNavigation } from './hooks/useViewNavigation';
-import { KeyBindingsProvider, useKeyBindings } from './contexts/KeyBindingsContext';
+import { ConfigProvider, useConfig } from './contexts/ConfigContext';
 import { Header } from './components/Header';
 import { TabNavigation } from './components/TabNavigation';
 import { StoryList } from './components/StoryList';
@@ -14,7 +14,7 @@ import { HNApiStoryType } from './types';
 const AppContent = () => {
   const [activeStoryType, setActiveStoryType] = useState<HNApiStoryType>('top');
   const { stories, loading, loadingMore, error, hasMore, loadMore, totalCount, refetch } = useHackerNews(activeStoryType, 15);
-  const { config } = useKeyBindings();
+  const { config } = useConfig();
 
   const {
     selectedTabIndex,
@@ -88,9 +88,9 @@ const AppContent = () => {
 
 const App = () => {
   return (
-    <KeyBindingsProvider>
+    <ConfigProvider>
       <AppContent />
-    </KeyBindingsProvider>
+    </ConfigProvider>
   );
 };
 

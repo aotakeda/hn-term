@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { HNStory } from '../types';
 import { extractLinks, openLinksInBrowser } from '../utils';
 import { styled, theme } from '../theme';
-import { useKeyBindings } from '../contexts/KeyBindingsContext';
+import { useConfig } from '../contexts/ConfigContext';
 import { useComments } from '../hooks/useComments';
 import { useCommentNavigation } from '../hooks/useCommentNavigation';
 import { StoryHeader } from './StoryHeader';
@@ -18,7 +18,7 @@ interface StoryDetailProps {
 
 export const StoryDetail = ({ story, onBack, onStoryUpdate }: StoryDetailProps) => {
   const { width, height } = useTerminalDimensions();
-  const { config, isModalMode, getKeyString, isKeyMatch, handleModalKey, getHelpText } = useKeyBindings();
+  const { config, isModalMode, getKeyString, isKeyMatch, handleModalKey, getHelpText } = useConfig();
   const [isStorySelected, setIsStorySelected] = useState(true);
 
   const fetchUpdatedStory = async (): Promise<void> => {

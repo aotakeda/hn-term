@@ -1,6 +1,6 @@
 import { HNStory, ViewMode } from '../types';
 import { styled, theme } from '../theme';
-import { useKeyBindings } from '../contexts/KeyBindingsContext';
+import { useConfig } from '../contexts/ConfigContext';
 import { TAB_OPTIONS } from './TabNavigation';
 
 interface FooterProps {
@@ -24,7 +24,7 @@ export const Footer = ({
   hasMore,
   totalCount
 }: FooterProps) => {
-  const { isModalMode, config } = useKeyBindings();
+  const { isModalMode, config } = useConfig();
 
   const getFooterContent = () => {
     if (viewMode === 'tabs') {

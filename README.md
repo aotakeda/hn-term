@@ -58,12 +58,12 @@ bun install
 
 ### Configuration
 
-1. Copy the example configuration file:
+1. Copy the default configuration file:
 ```bash
-cp .config.example.json .config.json
+cp .config.default.ts .config.ts
 ```
 
-2. Customize key bindings and settings in `.config.json` as needed.
+1. Customize key bindings and settings in `.config.ts` as needed.
 
 ### Running the Application
 
@@ -81,7 +81,7 @@ bun run tsc --noEmit
 
 ## Key Bindings
 
-Default key bindings (configurable in `.config.json`):
+Default key bindings (configurable in `.config.ts`):
 
 ### Navigation
 - `↑/k`: Move up
@@ -100,18 +100,75 @@ Default key bindings (configurable in `.config.json`):
 
 ## Configuration
 
-The application supports customizable key bindings and settings through `.config.json`:
+The application supports customizable key bindings, settings, and theme colors through `.config.ts`:
 
-```json
-{
-  "keyBindings": {
-    "navigation": { "up": ["up", "k"], "down": ["down", "j"] },
-    "actions": { "back": ["escape"], "enter": ["return", "enter"] }
+### Key Bindings and Settings
+
+```typescript
+import { Config } from './src/types';
+
+export const defaultConfig: Config = {
+  keyBindings: {
+    navigation: { up: ["up", "k"], down: ["down", "j"] },
+    actions: { back: ["escape"], enter: ["return", "enter"] }
   },
-  "settings": {
-    "doubleKeyTimeout": 500,
-    "modalTimeout": 2000,
-    "showHelpText": true
+  settings: {
+    doubleKeyTimeout: 500,
+    modalTimeout: 2000,
+    showHelpText: true
   }
-}
+};
 ```
+
+### Theme Customization
+
+You can customize the application colors by adding a `theme` section to your `.config.ts`:
+
+```typescript
+export const defaultConfig: Config = {
+  theme: {
+    bg: {
+      primary: "#0f0f0f",
+      secondary: "#1a1a1a",
+      tertiary: "#262626",
+      quaternary: "#2d2d2d",
+      selected: "#363636",
+      accent: "#404040"
+    },
+    text: {
+      primary: "#ffffff",
+      secondary: "#b3b3b3",
+      tertiary: "#808080",
+      muted: "#666666",
+      disabled: "#4d4d4d"
+    },
+    border: {
+      primary: "#404040",
+      secondary: "#333333",
+      focused: "#606060",
+      accent: "#757575"
+    },
+    accent: {
+      primary: "#ff6b35",
+      link: "#4a90e2",
+      success: "#5cb85c",
+      error: "#d9534f",
+      warning: "#f0ad4e"
+    }
+  }
+};
+```
+
+#### Theme Color Categories
+
+- **bg**: Background colors for different UI elements
+- **text**: Text colors for various content types
+- **border**: Border and outline colors
+- **accent**: Semantic accent colors for different UI states:
+  - `primary`: Main accent color for highlights
+  - `link`: Color for links and interactive elements
+  - `success`: Color for success states and positive feedback
+  - `error`: Color for error states and warnings
+  - `warning`: Color for warning states and cautions
+
+You can customize any subset of these colors - unspecified colors will use the default values. The theme supports partial configuration, so you can change just the colors you want to customize.

@@ -65,6 +65,37 @@ export interface KeyBindings {
   };
 }
 
+export interface ThemeColors {
+  bg?: {
+    primary?: string;
+    secondary?: string;
+    tertiary?: string;
+    quaternary?: string;
+    selected?: string;
+    accent?: string;
+  };
+  text?: {
+    primary?: string;
+    secondary?: string;
+    tertiary?: string;
+    muted?: string;
+    disabled?: string;
+  };
+  border?: {
+    primary?: string;
+    secondary?: string;
+    focused?: string;
+    accent?: string;
+  };
+  accent?: {
+    primary?: string;
+    link?: string;
+    success?: string;
+    error?: string;
+    warning?: string;
+  };
+}
+
 export interface Config {
   keyBindings: KeyBindings;
   settings: {
@@ -72,6 +103,7 @@ export interface Config {
     modalTimeout: number;
     showHelpText: boolean;
   };
+  theme?: ThemeColors;
 }
 
 export interface NavigationItem {

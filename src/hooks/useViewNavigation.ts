@@ -3,7 +3,7 @@ import { useTerminalDimensions } from '@opentui/react';
 import type { ParsedKey } from '@opentui/core';
 import { HNStory, ViewMode, Config } from '../types';
 import { TAB_OPTIONS } from '../components/TabNavigation';
-import { useKeyBindings } from '../contexts/KeyBindingsContext';
+import { useConfig } from '../contexts/ConfigContext';
 import { openLinksInBrowser } from '../utils/browser';
 
 export const useViewNavigation = () => {
@@ -16,7 +16,7 @@ export const useViewNavigation = () => {
   const { height } = useTerminalDimensions();
   const visibleHeight = height - 8;
   const storiesPerScreen = Math.floor(visibleHeight / 8);
-  const { getKeyString, isKeyMatch, handleModalKey } = useKeyBindings();
+  const { getKeyString, isKeyMatch, handleModalKey } = useConfig();
 
   const handleTabNavigation = (key: ParsedKey, config: Config, refetchCallback?: () => void) => {
     const keyStr = getKeyString(key);
