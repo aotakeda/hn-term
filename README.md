@@ -2,6 +2,8 @@
 
 A terminal-based Hacker News reader built with React and [OpenTUI](https://github.com/sst/opentui), providing a keyboard-based way to browse Hacker News stories and comments.
 
+![HN Term](demo.gif)
+
 ## Features
 
 - Browse different Hacker News story types (top, new, show, ask, jobs)
@@ -9,7 +11,7 @@ A terminal-based Hacker News reader built with React and [OpenTUI](https://githu
 - Vim-like keybindings (hjkl navigation)
 - Real-time story and comment loading by using official HN API
 - Terminal-based UI with responsive layout
-- Configurable key bindings and settings
+- Configurable key bindings and theme colors
 
 ## Project Architecture
 
