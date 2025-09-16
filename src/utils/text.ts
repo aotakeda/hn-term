@@ -6,15 +6,19 @@ export const wrapText = (text: string, maxWidth: number, indent: string = ""): s
   const effectiveWidth = maxWidth - indentLength;
 
   for (const word of words) {
-    if (currentLine.length - indentLength + word.length + 1 > effectiveWidth && currentLine.length > indentLength) {
+    const wouldExceedWidth = currentLine.length - indentLength + word.length + 1 > effectiveWidth;
+    const hasContent = currentLine.length > indentLength;
+
+    if (wouldExceedWidth && hasContent) {
       lines.push(currentLine);
       currentLine = indent + word;
-    } else {
-      if (currentLine.length > indentLength) {
-        currentLine += ' ';
-      }
-      currentLine += word;
+      continue;
     }
+
+    if (hasContent) {
+      currentLine += ' ';
+    }
+    currentLine += word;
   }
 
   if (currentLine.length > indentLength) {

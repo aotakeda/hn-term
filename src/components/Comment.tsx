@@ -44,7 +44,7 @@ export const Comment = ({
       const isExpanded = expandedComments.has(comment.id);
       const action = isExpanded ? 'collapse' : 'expand';
       const noun = validChildrenCount === 1 ? 'reply' : 'replies';
-      return ` • [Enter: ${action} ${validChildrenCount} ${noun}]`;
+      return ` • [${action} ${validChildrenCount} ${noun}]`;
     }
 
     return '';
