@@ -24,7 +24,7 @@ export interface HNComment {
 }
 
 export type HNApiStoryType = 'top' | 'new' | 'show' | 'ask' | 'jobs';
-export type HNStoryType = HNApiStoryType | 'repository';
+export type HNStoryType = HNApiStoryType | 'saved' | 'repository';
 
 export type ViewMode = 'tabs' | 'stories' | 'story-detail';
 
@@ -52,6 +52,8 @@ export interface KeyBindings {
     navigate: string[];
     select: string[];
     openLinks: string[];
+    save: string[];
+    remove: string[];
     back: string[];
     refresh: string[];
   };

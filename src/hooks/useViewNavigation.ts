@@ -5,6 +5,8 @@ import { HNStory, ViewMode, Config } from '../types';
 import { TAB_OPTIONS } from '../components/TabNavigation';
 import { useConfig } from '../contexts/ConfigContext';
 import { openLinksInBrowser } from '../utils/browser';
+import { saveStory, removeSavedStory } from '../utils/savedStories';
+import { extractModalKeyFromBindings } from '../utils/keyUtils';
 
 export const useViewNavigation = () => {
   const [selectedTabIndex, setSelectedTabIndex] = useState(0);
@@ -36,10 +38,14 @@ export const useViewNavigation = () => {
     }
 
     if (isKeyMatch(keyStr, config.keyBindings.tabs.select)) {
-      if (TAB_OPTIONS[selectedTabIndex]?.value === 'repository') {
+      const selectedTab = TAB_OPTIONS[selectedTabIndex];
+      if (!selectedTab) return;
+
+      if (selectedTab.value === 'repository') {
         openLinksInBrowser(['https://github.com/aotakeda/hn-term']);
         return;
       }
+
       setViewMode('stories');
       setSelectedStoryIndex(0);
       return;
@@ -107,14 +113,40 @@ export const useViewNavigation = () => {
     setSelectedStoryIndex(0);
   };
 
-  const handleStoryNavigation = (key: ParsedKey, stories: HNStory[], config: Config, loadMoreCallback?: () => void, refetchCallback?: () => void) => {
+  const handleStoryNavigation = (key: ParsedKey, stories: HNStory[], config: Config, loadMoreCallback?: () => void, refetchCallback?: () => void, refreshSavedStoriesCallback?: () => void) => {
     const keyStr = getKeyString(key);
 
     if (handleModalKey(key, (modalKey: string) => {
-      if (modalKey === 'o' && stories.length > 0) {
+      const openLinkKey = extractModalKeyFromBindings(config.keyBindings.stories.openLinks);
+      const saveKey = extractModalKeyFromBindings(config.keyBindings.stories.save);
+      const removeKey = extractModalKeyFromBindings(config.keyBindings.stories.remove);
+
+      if (modalKey === openLinkKey && stories.length > 0) {
         const selectedStory = stories[selectedStoryIndex];
         if (selectedStory?.url) {
           openLinksInBrowser([selectedStory.url]);
+        }
+      }
+      if (modalKey === saveKey && stories.length > 0) {
+        const selectedStory = stories[selectedStoryIndex];
+        if (selectedStory) {
+          (async () => {
+            await saveStory(selectedStory);
+            if (refreshSavedStoriesCallback) {
+              refreshSavedStoriesCallback();
+            }
+          })();
+        }
+      }
+      if (modalKey === removeKey && stories.length > 0) {
+        const selectedStory = stories[selectedStoryIndex];
+        if (selectedStory) {
+          (async () => {
+            await removeSavedStory(selectedStory.id);
+            if (refreshSavedStoriesCallback) {
+              refreshSavedStoriesCallback();
+            }
+          })();
         }
       }
     })) {

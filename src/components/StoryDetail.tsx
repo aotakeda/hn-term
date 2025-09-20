@@ -2,6 +2,7 @@ import { useKeyboard, useTerminalDimensions } from '@opentui/react';
 import { useState } from 'react';
 import { HNStory } from '../types';
 import { extractLinks, openLinksInBrowser } from '../utils';
+import { extractModalKeyFromBindings } from '../utils/keyUtils';
 import { styled, theme } from '../theme';
 import { useConfig } from '../contexts/ConfigContext';
 import { useComments } from '../hooks/useComments';
@@ -195,7 +196,9 @@ export const StoryDetail = ({ story, onBack, onStoryUpdate }: StoryDetailProps) 
     const keyStr = getKeyString(key);
 
     const isModalHandled = handleModalKey(key, (modalKey) => {
-      if (modalKey === 'o') {
+      const openLinkKey = extractModalKeyFromBindings(config.keyBindings.comments.openLinks);
+
+      if (modalKey === openLinkKey) {
         handleOpenLinks();
       }
     });

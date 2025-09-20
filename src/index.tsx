@@ -10,10 +10,13 @@ import { Footer } from './components/Footer';
 import { StoryDetail } from './components/StoryDetail';
 import { theme } from './theme';
 import { HNApiStoryType } from './types';
+import { useSavedStories } from './hooks/useSavedStories';
+import { TAB_OPTIONS } from './components/TabNavigation';
 
 const AppContent = () => {
   const [activeStoryType, setActiveStoryType] = useState<HNApiStoryType>('top');
-  const { stories, loading, loadingMore, error, hasMore, loadMore, totalCount, refetch } = useHackerNews(activeStoryType, 15);
+  const { stories: hnStories, loading: hnLoading, loadingMore, error: hnError, hasMore, loadMore, totalCount: hnTotalCount, refetch } = useHackerNews(activeStoryType, 15);
+  const { savedStories, loading: savedLoading, error: savedError, refreshSavedStories, totalCount: savedTotalCount, isStorySaved } = useSavedStories();
   const { config } = useConfig();
 
   const {
@@ -28,14 +31,23 @@ const AppContent = () => {
     updateSelectedStory,
   } = useViewNavigation();
 
+  const selectedTab = TAB_OPTIONS[selectedTabIndex];
+  const isShowingSaved = selectedTab?.value === 'saved';
+  const stories = isShowingSaved ? savedStories : hnStories;
+  const loading = isShowingSaved ? savedLoading : hnLoading;
+  const error = isShowingSaved ? savedError : hnError;
+  const totalCount = isShowingSaved ? savedTotalCount : hnTotalCount;
+  const refreshCallback = isShowingSaved ? refreshSavedStories : refetch;
+
   useKeyboard((key) => {
     if (viewMode === 'tabs') {
-      handleTabNavigation(key, config, refetch);
+      handleTabNavigation(key, config, refreshCallback);
       return;
     }
 
     if (viewMode === 'stories') {
-      handleStoryNavigation(key, stories, config, hasMore ? loadMore : undefined, refetch);
+      const loadMoreCallback = isShowingSaved ? undefined : (hasMore ? loadMore : undefined);
+      handleStoryNavigation(key, stories, config, loadMoreCallback, refreshCallback, refreshSavedStories);
       return;
     }
   });
@@ -65,10 +77,14 @@ const AppContent = () => {
         <StoryList
           stories={stories}
           loading={loading}
-          loadingMore={loadingMore}
+          loadingMore={isShowingSaved ? false : loadingMore}
           error={error}
           selectedIndex={selectedStoryIndex}
           scrollOffset={storyScrollOffset}
+          isStorySaved={isStorySaved}
+          showEmptyState={isShowingSaved}
+          emptyStateMessage="No saved stories yet"
+          saveKeyBinding={config.keyBindings.stories.save[0]}
         />
       )}
 
@@ -78,8 +94,8 @@ const AppContent = () => {
         selectedTabIndex={selectedTabIndex}
         stories={stories}
         loading={loading}
-        loadingMore={loadingMore}
-        hasMore={hasMore}
+        loadingMore={isShowingSaved ? false : loadingMore}
+        hasMore={isShowingSaved ? false : hasMore}
         totalCount={totalCount}
       />
     </box>

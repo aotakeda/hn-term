@@ -25,7 +25,9 @@ export const defaultConfig: Config = {
       navigate: ["up", "down", "k", "j"],
       select: ["right", "l", "return", "enter"],
       openLinks: ["space+o"],
+      save: ["space+s"],
       back: ["escape"],
+      remove: ["space+r"],
       refresh: ["r"]
     },
     comments: {

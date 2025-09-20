@@ -29,13 +29,14 @@ const API_TAB_OPTIONS: ApiTabOption[] = [
 
 export const TAB_OPTIONS: TabOption[] = [
   ...API_TAB_OPTIONS,
+  { name: "Saved", description: "Your saved stories", value: "saved" },
   { name: "Repository", description: "Check the code, it's open-source!", value: "repository" }
 ];
 
 export const TabNavigation = ({ selectedIndex, onStoryTypeChange }: TabNavigationProps) => {
   useEffect(() => {
     const selectedOption = TAB_OPTIONS[selectedIndex];
-    if (selectedOption && selectedOption.value !== 'repository') {
+    if (selectedOption && selectedOption.value !== 'repository' && selectedOption.value !== 'saved') {
       const apiOption = API_TAB_OPTIONS.find(opt => opt.value === selectedOption.value);
       if (apiOption) {
         onStoryTypeChange(apiOption.value);

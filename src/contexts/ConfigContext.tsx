@@ -39,6 +39,8 @@ const defaultConfig: Config = {
       navigate: ['up', 'down', 'k', 'j'],
       select: ['right', 'l', 'return', 'enter'],
       openLinks: ['space+o'],
+      save: ['space+s'],
+      remove: ['space+r'],
       back: ['escape'],
       refresh: ['r']
     },
@@ -178,7 +180,7 @@ export const ConfigProvider = ({ children }: ConfigProviderProps) => {
         return `${kb.tabs.navigate.join('/')} navigate • ${kb.tabs.select.join('/')} ${selectAction} • ${kb.tabs.refresh.join('/')} refresh`;
 
       case 'stories':
-        return `${kb.stories.navigate.join('/')} navigate • ${kb.stories.select.join('/')} to view story • ${kb.stories.openLinks.join('/')} open external link • ${kb.stories.refresh.join('/')} refresh • ${kb.stories.back.join('/')} to go back`;
+        return `${kb.stories.navigate.join('/')} navigate • ${kb.stories.select.join('/')} to view story • ${kb.stories.openLinks.join('/')} open external link • ${kb.stories.save.join('/')} save story • ${kb.stories.remove.join('/')} remove saved • ${kb.stories.refresh.join('/')} refresh • ${kb.stories.back.join('/')} to go back`;
 
       case 'comments':
         return `${kb.comments.navigate.join('/')} navigate • ${kb.comments.expand.join('/')} expand • ${kb.comments.collapse.join('/')} collapse • ${kb.comments.openLinks.join('/')} open links • ${kb.comments.refresh.join('/')} refresh • ${kb.comments.back.join('/')} back`;
